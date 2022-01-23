@@ -1,0 +1,75 @@
+.TH PASS-MENU 1 pass\-menu
+
+.SH NAME
+pass-menu - Simple to use frontend for password-store
+
+.SH SYNOPSIS
+.B pass-menu
+[
+.I OPTIONS
+]
+--
+COMMAND
+[
+.I ARGS
+]
+
+.SH OPTIONS
+
+.TP
+\fB-p, --path\fP \fIpath\fP
+Sets path to the directory that contains password-store data.
+
+.TP
+\fB-c, --clip\fP
+Copies \fIoutput\fP to clipboard.
+
+.TP
+\fB--timeout\fP \fInumber\fP
+Sets timeout in seconds before clearing the clipboard data.
+
+Default value: 45
+
+.TP
+\fB-t, --type\fP
+Types \fIoutput\fP using the display manager, useful for GUI applications.
+For example: filling a text box in a website.
+
+.TP
+\fB-e, --echo\fP
+Prints \fIoutput\fP to the standard output.
+
+.TP
+\fB-h, --help\fP
+Display short help text and exit.
+
+.SH EXAMPLES
+.TP
+FZF:
+.br
+$
+.B pass-menu
+-- fzf
+
+$
+.B pass-menu
+--clip --timeout 10 -- fzf
+
+.TP
+DMENU:
+.br
+$
+.B pass-menu
+-- dmenu
+
+$
+.B pass-menu
+--type -- dmenu -i -l 15
+
+.SH AUTHOR
+Udayvir singh
+.UR https://github.com/udayvir-singh
+.UE
+
+.SH LICENCE
+MIT
