@@ -135,7 +135,7 @@ clip-copy () {
 		sleep "${TIMEOUT}" || exit 1
 		# restore clipboard back to orginal if it hasn't changed.
 		if [ "$(${CLIPGET[@]})" = "${VALUE}" ]; then
-			printf "${ORIG}" | ${CLIPSET[@]}
+			printf "%s" "${ORIG}" | ${CLIPSET[@]}
 		fi
 	} &
 }
