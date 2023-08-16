@@ -171,27 +171,20 @@ get-pass-keys () {
 
 	# parse action first
 	awk '
-	/action(.+)/ {
-		match($1, /action\((.+)\)/, a)
-		printf "((%s))\n", a[1]
+	/^ *action(.+)/ {
+		match($1, /action\((.+)\)/, action)
+		printf "((%s))\n", action[1]
 	}' <<< "${PASS_FILE}"
 
 	# parse rest of keys
 	awk '
-	BEGIN {
-		FS=": +"
-		password="Yes"
-	}
+	BEGIN { FS=" *: +" }
 
-	NR == 1 && ! $2 { print "Password"; password=Null }
+	NR == 1 && ! $2 { print "Password" }
 
 	$2 {
 		sub("^ +", "", $1)
-		if ( $1 == "Password") {
-			if (password) print $1
-		} else {
-			print $1
-		}
+		print $1
 	}
 
 	/^ *otpauth:/ { print "OTP" }' <<< "${PASS_FILE}"
@@ -207,22 +200,31 @@ get-pass-value () {
 	;;
 	Password)
 		pass "${PASS_NAME}" | awk '
-		BEGIN {
-			FS=": +"
-			password="Yes"
+		BEGIN { FS=" *: +" }
+
+		NR == 1 && ! $2 {
+			print $1
+			exit
 		}
 
-		NR == 1 && ! $2 { print $1; password=Null }
-
-		/Password/ && $2 { if (password) print $2 }'
+		$2 {
+			sub("^ +", "", $1)
+			if ($1 == "Password") {
+				print $2
+				exit
+			}
+		}'
 	;;
 	*)
 		pass "${PASS_NAME}" | awk -v key="${PASS_KEY}" '
-		BEGIN { FS=": +" }
+		BEGIN { FS=" *: +" }
 
 		$2 {
-			if ($1 ~ key)
+			sub("^ +", "", $1)
+			if ($1 == key) {
 				for (i=2; i<=NF; i++) print $i
+				exit
+			}
 		}'
 	;;
 	esac
@@ -232,8 +234,8 @@ get-action () {
 	local PASS_NAME="${1}"
 	local  ACT_NAME="${2}"
 
-	pass "${PASS_NAME}" | awk -v action="action.+${ACT_NAME}" '{
-		if ($1 ~ action)
+	pass "${PASS_NAME}" | awk -v action="action(${ACT_NAME})" '{
+		if (/^ */ $1 ~ action)
 			for (i=2; i<=NF; i++) print $i
 	}'
 }
