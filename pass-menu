@@ -234,10 +234,7 @@ get-action () {
 	local PASS_NAME="${1}"
 	local  ACT_NAME="${2}"
 
-	pass "${PASS_NAME}" | awk -v action="action(${ACT_NAME})" '{
-		if (/^ */ $1 ~ action)
-			for (i=2; i<=NF; i++) print $i
-	}'
+	pass "${PASS_NAME}" | awk -v action="action(${ACT_NAME})" '{ if ($1 == action) for (i=2; i<=NF; i++) print $i }'
 }
 
 execute-action () {
@@ -255,7 +252,11 @@ execute-action () {
 			shift 2
 			;;
 		:tab)
-			dotool-type "	"
+			dotool-type "\t"
+			shift 1
+			;;
+		:enter)
+			dotool-type "\n"
 			shift 1
 			;;
 		:sleep)
@@ -316,8 +317,9 @@ main () {
 	PASS_KEY=$(get-pass-keys "${PASS_NAME}" | call-menu)
 	[ -z "${PASS_KEY}" ] && exit 1
 
-	if [ "${PASS_KEY:(-2)}" = "))" ]; then
-		execute-action "${PASS_NAME}" $(get-action "${PASS_NAME}")
+	if [ "${PASS_KEY:0:2}" = "((" ] && [ "${PASS_KEY:(-2)}" = "))" ]; then
+		PASS_KEY="${PASS_KEY:2:(-2)}"
+		execute-action "${PASS_NAME}" $(get-action "${PASS_NAME}" "${PASS_KEY}")
 		return 0
 	fi
 

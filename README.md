@@ -78,7 +78,8 @@ action(<name>) <...actions>
 
 | Action             | Description                          |
 | ------------------ | ------------------------------------ |
-| `:tab`             | type out Tab key                     |
+| `:tab`             | send Tab key                         |
+| `:enter`           | send Enter key                       |
 | `:type <key>`      | type out `<key>` in store            |
 | `:clip <key>`      | copy `<key>` to clipboard            |
 | `:sleep {n}`       | wait for {n} amount of seconds       |
